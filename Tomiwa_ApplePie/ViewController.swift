@@ -31,24 +31,71 @@ class ViewController: UIViewController {
         // Do any additional setup after loading the view.
     }
     
+    struct Game {
+    var word: String
+    var incorrectMovesRemaining: Int
+    var guessedLetters: [Character]
+        
+        var formattedWord: String {
+        var guessedWord = ""
+        for letter in word {
+        if guessedLetters.contains(letter) {
+        guessedWord += "\(letter)"
+        }
+        else {
+        guessedWord += "_"
+         }
+        }
+        return guessedWord
+         }
+
+    mutating func playerGuessed(letter: Character) {
+        guessedLetters.append(letter)
+        if !word.contains(letter) {
+            incorrectMovesRemaining -= 1
+            }
+        }
+    }
+
+    
     var currentGame: Game!
-    func newRound(){
+    func newRound() {
         let newWord = listOfWords.removeFirst()
         currentGame = Game(word: newWord, incorrectMovesRemaining:
-        incorrectMovesAllowed)
+        incorrectMovesAllowed, guessedLetters: [])
         updateUI()
-
     }
+
     func updateUI() {
+    var letters = [String]()
+    for letter in currentGame.formattedWord {
+        letters.append(String(letter))
+    }
+        _ = letters.joined(separator: " ")
+    correctWordLabel.text = currentGame.formattedWord
     scoreLabel.text = "Wins: \(totalWins), Losses: \(totalLosses)"
     treeImageView.image = UIImage(named: "Tree \(currentGame.incorrectMovesRemaining)")
 
     }
+    
+    
+    
+
 
     
     @IBAction func buttonTapped(_ sender: UIButton) {
-        sender.isEnabled = false 
+        sender.isEnabled = false
+        let letterString = sender.title(for: .normal)!
+        let letter = Character(letterString.lowercased())
+        currentGame.playerGuessed(letter: letter)
+        updateUI()
+
+
+
     }
+    
+    
+
     
 
 
